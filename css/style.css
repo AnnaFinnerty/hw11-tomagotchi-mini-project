@@ -1,8 +1,16 @@
 body{
-    background: lightskyblue;
     margin: 0;
     padding: 0;
     font-family: 'Luckiest Guy', cursive;
+    background: lightskyblue;
+}
+
+.light{
+    background: lightskyblue;
+}
+
+.dark{
+    background: rgb(2, 24, 37);
 }
 
 button{
@@ -11,12 +19,23 @@ button{
     background: white;
 }
 
-.pet-container{
-    width: 100vw;
-    height: 90vh;
+span{
+    font-size: 6vh;
+    margin: 5px;
 }
 
-.button-row{
+.pet-container{
+    width: 100vw;
+    height: 80vh;
+}
+
+.pet{
+    height: 20vh;
+    margin-top: 40vh;
+    margin-left: 50vw;
+}
+
+.button-row, .display-row{
     width: 100vw;
     height: 10vh;
     display: flex;
