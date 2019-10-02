@@ -19,6 +19,9 @@ class Pet{
         this.hunger = 0;
         this.sleepiness = 0;
         this.boredom = 0;
+        this.ui = {
+            $petContainer: $('.pet-container'),
+        }
     }
     feed(){
         console.log("I'm being fed!");
@@ -41,10 +44,13 @@ const game = {
         }
     },
     createPet(){
+        console.log("creating pet!");
         this.pet = new Pet("Argus",13);
+        $pet = $("<div/>").addClass("pet");
     },
     feedPet(){
         console.log("feeding pet");
+        console.log(this.pet);
         this.pet.feed();
     },
     playWithPet(){
@@ -57,5 +63,11 @@ const game = {
     },
     showModal(){
 
+    },
+    clearContainer(container){
+        while(container.firstChild){
+            container.removeChild(container.firstChild);
+        }
     }
 }
+game.start();
