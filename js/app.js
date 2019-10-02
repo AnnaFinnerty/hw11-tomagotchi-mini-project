@@ -1,6 +1,6 @@
 console.log("app running");
 
-$('body').attr('backgroundImage','url("img/jungle_background.jpg")')
+$('body').css('backgroundImage','url("img/jungle_background.jpg")')
 
 $('#feed-button').on('click', function(){
     game.feedPet();
@@ -12,6 +12,10 @@ $('#play-button').on('click', function(){
 
 $('#lights-button').on('click', function(){
     game.toggleLights();
+})
+
+$('#pauase-button').on('click', function(){
+    game.togglePause();
 })
 
 $('.pet-container').on('mousemove', function(e){
@@ -26,7 +30,6 @@ class Pet{
         this.$display = $display;
         this.width = $display.width();
         this.height = $display.height();
-        console.log(this.width,this.height);
         this.traits = {
             hunger: 0,
             sleepiness: 0,
@@ -38,8 +41,12 @@ class Pet{
             top: 0,
             bottom: $('.pet-container').height(),
         }
-        
-        this.state = "sitting";
+        this.images = {
+            sitting: "img/tiger_seated.png",
+            standing: "img/tiger_standing.png",
+            dead: "img/tiger_standing.png",
+        },
+        this.state = "standing";
         this.isDead = false;
     }
     age(){
@@ -74,6 +81,10 @@ class Pet{
         this.$display.css("left",x+"px");
         this.$display.css("top",y+"px");
     }
+    setImage(){
+        const image = this.images[this.state];
+        this.$display.attr("src",image)
+    }
     feed(){
         console.log("I'm being fed!");
         this.state = "sitting";
@@ -90,10 +101,12 @@ class Pet{
     }
     die(){
         this.isDead = true;
+        this.state = "dead";
     }
 }
 
 const game = {
+    paused: false,
     ageRate: 1000,
     timer: null,
     lightsOn: true,
@@ -118,10 +131,10 @@ const game = {
     createPet(){
         console.log("creating pet!");
         $pet = $("<img/>").addClass("pet");
-        $pet.attr("src","img/tiger_seated.png")
         this.ui.$petContainer.append($pet);
         this.ui.$petImage = $pet;
         this.pet = new Pet("Argus",0, $pet);
+        this.pet.setImage();
     },
     startTimer(){
         this.timer = setInterval(()=>{
@@ -144,10 +157,12 @@ const game = {
         console.log("feeding pet");
         console.log(this.pet);
         this.pet.feed();
+        this.pet.setImage();
     },
     playWithPet(){
         console.log("playing with pet");
-        this.playWithPet();
+        this.pet.play();
+        this.pet.setImage();
     },
     toggleLights(){
         this.lightsOn = !this.lightsOn;
@@ -157,10 +172,7 @@ const game = {
             this.ui.$body.removeClass("light").addClass("dark");
         }
     },
-    setPetState(){
-
-    },
-    showModal(){
+    togglePause(){
 
     },
     updateUI(){
