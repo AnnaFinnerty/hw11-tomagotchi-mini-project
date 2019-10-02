@@ -30,9 +30,12 @@ span{
 }
 
 .pet{
+    /*absolute positioning needed for movement*/
+    position: absolute;
     height: 20vh;
-    margin-top: 40vh;
-    margin-left: 50vw;
+    width: 30vw;
+    top: 0px;
+    left: 0px;
 }
 
 .button-row, .display-row{
