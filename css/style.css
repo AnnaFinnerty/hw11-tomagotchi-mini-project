@@ -99,6 +99,11 @@ span{
     align-self: flex-end;
 }
 
+.party-hat{
+    width: 5vw;
+    height: 10vh;
+}
+
 #bowl{
     position: fixed;
     width: 10vw;
@@ -113,6 +118,9 @@ span{
 }
 
 .mouse{
+    position: fixed;
     height: 20vh;
+    top: 50vh;
+    left: 50vw;
 }
 
