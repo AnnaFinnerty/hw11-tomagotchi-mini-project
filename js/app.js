@@ -1,7 +1,5 @@
 console.log("app running");
 
-//$('body').css('backgroundImage','url("img/jungle_background.jpg")')
-
 $('#feed-button').on('click', function(){
     game.feedPet();
 })
@@ -21,6 +19,10 @@ $('#pause-button').on('click', function(){
 $('.pet-container').on('mousemove', function(e){
     //console.log('test: eventlistener');
     game.movePet(e.clientX,e.clientY);
+})
+
+$('#close-pop').on('click',function(){
+    game.togglePop();
 })
 
 class Pet{
@@ -113,12 +115,11 @@ class Pet{
             this.traits.hunger = this.traits.hunger-- < 0 ? 0: this.traits.hunger--;
             this.unfreeze();
         },this.feedDelay*this.traits.hunger)   
-        //this.moving = true;
     }
     play(){
         console.log("I'm playing");
         this.state = "playing";
-        this.freeze(this.boundaries.right*.5,this.boundaries.bottom*.5)
+        this.freeze(this.boundaries.right*.5,this.boundaries.bottom*.5);
         setTimeout(()=>{
             this.traits.boredom = this.traits.boredom-- < 0 ? 0: this.traits.boredom--;
             this.unfreeze();
@@ -146,6 +147,8 @@ class Pet{
     die(){
         this.isDead = true;
         this.state = "dead";
+        this.freeze();
+        this.setImage();
     }
 }
 
@@ -168,26 +171,54 @@ const game = {
         $ageYear: $('#age-year-display'),
         $ageMonth: $('#age-month-display'),
         $bowl: $('#bowl'),
-        $popup: $('#pop-up'),
+        $popup: $('.pop-up'),
         $message: $('#message'),
     },
     start(){
         console.log('Starting game!');
-        if(this.pet === null){
-            this.createPet();
-        }
-        console.log(this.ui.$bowl);
         this.ui.$bowl.attr("src","img/bowl_empty.png");
-        this.updateUI();
-        this.startTimer();
+        
+        if(this.pet === null){
+            this.requestNamePrompt();
+        } else {
+            this.startTimer();
+            this.updateUI();
+        }
+        
+        
     },
-    createPet(){
+    requestNamePrompt(){
+        $('#close-pop').addClass("hidden");
+        this.message("What is your new pet's name?");
+        console.log(this.ui.$popup);
+        const $input = $('<input/>');
+        this.ui.$popup.append($input);
+        //this.ui.$input = $input;
+        const $button = $('<button/>');
+              $button.text("LET\'S GO!");
+        this.ui.$popup.append($button);
+        $button.on("click",()=> {
+            const name = $input.val();
+            this.submitName(name);
+        })
+    },
+    submitName(name){
+        console.log("name submitted");
+        if(name !== ""){
+            this.createPet(name);
+            $('.pop-up button').remove();
+            $('.pop-up input').remove();
+            this.togglePop();
+        }
+    },
+    createPet(name){
         console.log("creating pet!");
         $pet = $("<img/>").addClass("pet");
         this.ui.$petContainer.append($pet);
         this.ui.$petImage = $pet;
-        this.pet = new Pet("Argus",0, $pet, this.feedDelay, this.sleepDelay, this.playDelay);
+        this.pet = new Pet(name,0, $pet, this.feedDelay, this.sleepDelay, this.playDelay);
         this.pet.setImage();
+        this.startTimer();
     },
     startTimer(){
         this.timer = setInterval(()=>{
@@ -204,8 +235,9 @@ const game = {
         clearInterval(this.timer);
     },
     movePet(x,y){
-        console.log("test: movePet()")
-        this.pet.updatePosition(x,y);
+        if(this.pet !== null){
+            this.pet.updatePosition(x,y);
+        }
     },
     feedPet(){
         console.log("feeding pet");
@@ -214,10 +246,15 @@ const game = {
         this.ui.$bowl.attr("src","img/bowl_full.png");
         setTimeout(()=>{
             this.ui.$bowl.attr("src","img/bowl_empty.png");
-        },this.feedDelay)
+        },this.feedDelay*this.pet.hunger)
     },
     playWithPet(){
         console.log("playing with pet");
+        const $mouseTail = $('<div/>').addClass('mouse-tail');
+        const $mouse = $('<img/>').addClass('mouse');
+              $mouse.attr('src',"img/mouse.png");
+        $mouseTail.append($mouse);
+        this.ui.$petContainer.append($mouseTail);
         this.pet.play();
     },
     toggleLights(){
@@ -234,10 +271,19 @@ const game = {
         this.paused = !this.paused;
     },
     togglePop(){
-        this.isPopUpShowing = !this.isPopUpShowing;
+        /*
         this.ui.$popup.toggleClass(function(){
-            return this.isPopUpShowing ? "" : "hidden";
+            console.log("sending message");
+            return this.isPopUpShowing ? "hidden" : "   ";
         });
+        //this.ui.$popup.toggleClass("hidden",this.isPopUpShowing);
+        */
+        if(this.isPopUpShowing){ 
+            this.ui.$popup.addClass("hidden");
+        } else {
+            this.ui.$popup.removeClass("hidden");
+        }
+        this.isPopUpShowing = !this.isPopUpShowing;
     },
     updateUI(){
         this.ui.$boredomDisplay.text(this.pet.traits.boredom);
