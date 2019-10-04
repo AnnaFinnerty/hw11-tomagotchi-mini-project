@@ -2,7 +2,7 @@ class Pet{
     constructor(name,age,$display, feedDelay, sleepDelay, playDelay,testMode){
         this.name = name;
         this.ageYear = age;
-        this.ageMonth = 0;
+        this.ageMonth = 1;
         this.ageRange = 0;
         this.feedDelay = feedDelay;
         this.sleepDelay = sleepDelay;
@@ -10,8 +10,6 @@ class Pet{
         this.$display = $display;
         this.width = $display.width();
         this.height = $display.height();
-        this.maxWidth = $display.width() * 1.2;
-        this.maxHeight = $display.height() * 1.2;
         this.testMode = testMode;
         this.traits = {
             hunger: 0,
@@ -38,7 +36,10 @@ class Pet{
                     this.neutral();
                 }
             }
-            if(this.ageMonth === 1){
+            if(this.ageMonth === 11){
+                this.ageMonth = 0;
+            }
+            if(this.ageMonth === 0){
                 this.birthday();
             } else {
                 this.ageMonth++;
@@ -49,13 +50,16 @@ class Pet{
         }
     }
     birthday(){
-        this.ageMonth = 0;
+        this.ageMonth++;
         this.ageYear++;
         //increase size as tiger ages up to max size
         if(this.ageYear%5===0 || this.testMode){
             if(this.ageRange <= 3){
-                this.$display.removeClass("ageRange"+this.ageRange-1).addClass("ageRange"+this.ageRange);
+                this.$display.removeClass();
+                this.$display.addClass("pet ageRange"+this.ageRange);
                 this.ageRange++;
+                this.width = this.$display.width();
+                this.height = this.$display.height();
                 this.setImage();
                 }
             }
@@ -105,7 +109,7 @@ class Pet{
         setTimeout(()=>{
             clearInterval(interval);
             this.unfreeze();
-        },this.feedDelay*this.traits.hunger)   
+        },this.feedDelay*(this.traits.hunger+1))   
     }
     play(){
         console.log("I'm playing");
@@ -119,7 +123,7 @@ class Pet{
         setTimeout(()=>{
             clearInterval(interval);
             this.unfreeze();
-        },this.playDelay*this.traits.boredom)  
+        },this.playDelay*(this.traits.boredom + 1))  
     }
     sleep(){
         console.log("I'm sleeping");
@@ -133,7 +137,7 @@ class Pet{
         setTimeout(()=>{
             clearInterval(interval);
             this.unfreeze();
-        },this.sleepDelay*this.traits.sleepiness) 
+        },this.sleepDelay*(this.traits.sleepiness+1)) 
     }
     freeze(x,y){
         this.updatePosition(x,y);

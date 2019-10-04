@@ -21,10 +21,6 @@ input{
     font-family: 'Luckiest Guy', cursive;
 }
 
-.light{
-    
-}
-
 .dark{
     background:rgba(0,0,255,.5);
 }
@@ -35,9 +31,17 @@ button{
     background: white;
 }
 
+button:hover{
+    background: orange;
+}
+
 h1{
     font-size: 6vh;
     margin: 5px;
+}
+
+h2{
+    font-size: 8vh;
 }
 
 .pet-container{
@@ -48,10 +52,33 @@ h1{
 .pet{
     /*absolute positioning needed for movement*/
     position: absolute;
-    height: 15vw;
-    width: 25vw;
     top: 0px;
     left: 0px;
+}
+
+.ageRange0{
+    height: 15vw;
+    width: 20vw;
+}
+
+.ageRange1{
+    height: 20vw;
+    width: 30vw;
+}
+
+.ageRange2{
+    height: 25vw;
+    width: 30vw;
+}
+
+.ageRange3{
+    height: 25vw;
+    width: 30vw;
+}
+
+.ageRange4{
+    height: 20vw;
+    width: 25vw;
 }
 
 .name-row{
@@ -104,10 +131,14 @@ h1{
     align-self: flex-end;
 }
 
-.party-hat{
-    position: absolute;
+.submit-button{
     width: 5vw;
-    height: 10vh;
+    margin: 5vh auto;
+
+}
+
+#message{
+    padding-top: 5vh;
 }
 
 #bowl{

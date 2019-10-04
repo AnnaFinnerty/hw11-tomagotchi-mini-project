@@ -1,9 +1,10 @@
 console.log("app running");
 
 //bugs
-//+++ can close pop-up on pause
-//+++ can generate multiple events on button click
-//+++ on test mode, ageRange runs past available images
+//+++ can't rename tiger
+//--- can generate multiple events on button click
+//--- on test mode, ageRange runs past available images
+//--- pop-up close button appears on pause
 
 $('#feed-button').on('click', function(){
     game.feedPet();
@@ -36,14 +37,14 @@ $('#new-button').on('click',function(){
 
 const game = {
     paused: false,
-    ageRate: 500,
+    ageRate: 1000,
     timer: null,
     feedDelay: 1000,
     sleepDelay: 1000,
     playDelay: 1000,
     lightsOn: true,
     isPopUpShowing: false,
-    testMode: true,
+    testMode: false,
     pet: null,
     ui: {
         $body: $('body'),
@@ -84,7 +85,7 @@ const game = {
         console.log(this.ui.$popup);
         const $input = $('<input/>');
         this.ui.$popup.append($input);
-        const $button = $('<button/>');
+        const $button = $('<button/>').addClass("submit-button");
               $button.text("LET\'S GO!");
         this.ui.$popup.append($button);
         const $checkbox = $('<input type="checkbox">');
@@ -93,7 +94,7 @@ const game = {
         
         $button.on("click",()=> {
             const name = $input.val();
-            const testMode = $checkbox.val();
+            const testMode = $checkbox.is(':checked');
             this.submitName(name,testMode);
         })
     },
@@ -104,15 +105,16 @@ const game = {
             $('.pop-up button').remove();
             $('.pop-up input').remove();
             this.togglePop();
-            $('#name-row').text(name);
+            $('.name-row').text(name + " the tiger");
             this.testMode = testMode;
+            console.log(this.testMode);
         }
     },
     createPet(name){
         console.log("creating pet!");
         //const $petShell 
-        const $petShell = $("<div/>").addClass("pet-shell ageRange0");
-        const $pet = $("<img/>").addClass("pet");
+        const $petShell = $("<div/>").addClass("pet-shell");
+        const $pet = $("<img/>").addClass("pet ageRange0");
         $petShell.append($pet);
         this.ui.$petContainer.append($petShell);
         this.ui.$petImage = $pet;
@@ -142,35 +144,38 @@ const game = {
     },
     feedPet(){
         console.log("feeding pet");
-        if(this.pet.ageMonth === 0){
-            this.haveBirthday();
-        } else {
-            if(this.pet.traits.hunger < 1){
-                this.message(this.pet.name + " isn't hungry right now");
+        if(this.pet.isMoving){
+            if(this.pet.ageMonth === 0){
+                this.haveBirthday();
             } else {
-                this.ui.$bowl.attr("src","img/bowl_full.png");
-                this.pet.feed();
-                setTimeout(()=>{
-                    this.ui.$bowl.attr("src","img/bowl_empty.png");
-                },this.feedDelay*this.pet.traits.hunger)
+                if(this.pet.traits.hunger < 1){
+                    this.message(this.pet.name + " isn't hungry right now");
+                } else {
+                    this.ui.$bowl.attr("src","img/bowl_full.png");
+                    this.pet.feed();
+                    setTimeout(()=>{
+                        this.ui.$bowl.attr("src","img/bowl_empty.png");
+                    },this.feedDelay*this.pet.traits.hunger)
+                }
             }
-        }
-        
+        }    
     },
     playWithPet(){
         console.log("playing with pet");
         if(this.pet.traits.boredom < 1){
             this.message(this.pet.name + " isn't bored right now");
         } else {
-            const $mouseTail = $('<div/>').addClass('mouse-tail');
-            const $mouse = $('<img/>').addClass('mouse');
-                  $mouse.attr('src',"img/mouse.png");
-            $mouseTail.append($mouse);
-            this.ui.$petContainer.append($mouseTail);
-            this.pet.play();
-            setTimeout(()=>{
-                $mouseTail.remove();
-            },this.playDelay*this.pet.traits.boredom)
+            if(this.pet.isMoving){
+                const $mouseTail = $('<div/>').addClass('mouse-tail');
+                const $mouse = $('<img/>').addClass('mouse');
+                    $mouse.attr('src',"img/mouse.png");
+                $mouseTail.append($mouse);
+                this.ui.$petContainer.append($mouseTail);
+                this.pet.play();
+                setTimeout(()=>{
+                    $mouseTail.remove();
+                },this.playDelay*this.pet.traits.boredom)
+            }
         }
     },
     haveBirthday(){
@@ -186,16 +191,18 @@ const game = {
         },this.feedDelay*3)
     },
     letPetSleep(){
-        if(this.pet.traits.sleepiness < 1){
-            this.message(this.pet.name + " isn't sleepy right now",300);
-        } else {
-            console.log("time to sleep!");
-            this.toggleLights();
-            this.pet.sleep();
-            setTimeout(()=>{
+        if(this.pet.isMoving){
+            if(this.pet.traits.sleepiness < 1){
+                this.message(this.pet.name + " isn't sleepy right now",300);
+            } else {
+                console.log("time to sleep!");
                 this.toggleLights();
-                this.pet.neutral();
-            },this.sleepDelay*this.pet.traits.sleepiness)
+                this.pet.sleep();
+                setTimeout(()=>{
+                    this.toggleLights();
+                    this.pet.neutral();
+                },this.sleepDelay*this.pet.traits.sleepiness)
+            }
         }
     },
     toggleLights(){
@@ -214,7 +221,7 @@ const game = {
             this.stopTimer();
             this.pet.freeze();
         } else {
-            this.message("unpaused!");
+            this.message("unpaused!",200);
             this.startTimer();
             this.pet.unfreeze();
         }
