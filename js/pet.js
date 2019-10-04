@@ -25,12 +25,12 @@ class Pet{
             bottom: $('.pet-container').height(),
         }
         this.images = {
-            sitting: "img/tiger0_seated.png",
+            seated: "img/tiger0_seated.png",
             playing: "img/tiger0_playing.png",
             sleeping:"img/tiger_sleeping.png",
             standing: "img/tiger0_standing.png",
             dead: "img/tiger0_dead.png",
-            sitting1: "img/tiger1_playing.png",
+            seated1: "img/tiger1_playing.png",
             playing1: "img/tiger1_seated.png",
             sleeping1:"img/tiger_sleeping.png",
             standing1: "img/tiger1_standing.png",
@@ -103,7 +103,7 @@ class Pet{
     }
     feed(){
         console.log("I'm being fed!");
-        this.state = "sitting";
+        this.state = "seated";
         this.freeze(this.boundaries.right*.38,this.boundaries.bottom*.8);
         const interval = setInterval(() => {
             if(this.traits.hunger > 0){

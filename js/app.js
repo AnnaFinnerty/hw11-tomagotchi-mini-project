@@ -25,6 +25,10 @@ $('#close-pop').on('click',function(){
     game.togglePop();
 })
 
+$('#new-button').on('click',function(){
+    game.togglePop();
+})
+
 
 
 const game = {
@@ -189,7 +193,15 @@ const game = {
         }
     },
     togglePause(){
+        console.log("toggling pause!");
         this.paused = !this.paused;
+        if(this.paused){
+            this.stopTimer();
+            this.pet.freeze();
+        } else {
+            this.startTimer();
+            this.pet.unfreeze();
+        }
     },
     petDeathRestart(){
         $('#close-pop').addClass("hidden");
