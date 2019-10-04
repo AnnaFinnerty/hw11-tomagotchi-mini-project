@@ -35,7 +35,7 @@ button{
     background: white;
 }
 
-span{
+h1{
     font-size: 6vh;
     margin: 5px;
 }
@@ -80,6 +80,7 @@ span{
     border-radius: 5%;
     margin-top: -70vh;
     margin-left: 25vw;
+    font-size: 6vh;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -104,6 +105,7 @@ span{
 }
 
 .party-hat{
+    position: absolute;
     width: 5vw;
     height: 10vh;
 }

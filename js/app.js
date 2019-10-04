@@ -36,6 +36,7 @@ const game = {
     playDelay: 1000,
     lightsOn: true,
     isPopUpShowing: false,
+    testMode: true,
     pet: null,
     ui: {
         $body: $('body'),
@@ -54,8 +55,11 @@ const game = {
         this.ui.$bowl.attr("src","img/bowl_empty.png");
         
         if(this.pet === null){
-            //this.requestNamePrompt();
-            this.createPet("Argus");
+            if(this.testMode){
+                this.createPet("Argus");
+            } else {
+                this.requestNamePrompt();
+            }
         } else {
             this.startTimer();
             this.updateUI();
@@ -70,28 +74,38 @@ const game = {
         const $button = $('<button/>');
               $button.text("LET\'S GO!");
         this.ui.$popup.append($button);
+        const $checkbox = $('<input type="checkbox">');
+        this.ui.$popup.append($checkbox);
+        
+        
         $button.on("click",()=> {
             const name = $input.val();
-            this.submitName(name);
+            const testMode = $checkbox.val();
+            this.submitName(name,testMode);
         })
     },
-    submitName(name){
+    submitName(name,testMode){
         console.log("name submitted");
         if(name !== ""){
             this.createPet(name);
             $('.pop-up button').remove();
             $('.pop-up input').remove();
             this.togglePop();
+            $('#name-row').text(name);
+            this.testMode = testMode;
         }
     },
     createPet(name){
         console.log("creating pet!");
-        $pet = $("<img/>").addClass("pet");
-        this.ui.$petContainer.append($pet);
+        //const $petShell 
+        const $petShell = $("<div/>").addClass("pet-shell");
+        const $pet = $("<img/>").addClass("pet");
+        $petShell.append($pet);
+        this.ui.$petContainer.append($petShell);
         this.ui.$petImage = $pet;
-        this.pet = new Pet(name,0, $pet, this.feedDelay, this.sleepDelay, this.playDelay);
+        this.ui.$petShell = $petShell;
+        this.pet = new Pet(name,0, $pet, this.feedDelay, this.sleepDelay, this.playDelay,this.testMode);
         this.pet.setImage();
-        this.haveBirthday();
         this.startTimer();
     },
     startTimer(){
@@ -115,15 +129,20 @@ const game = {
     },
     feedPet(){
         console.log("feeding pet");
-        if(this.pet.traits.hunger < 1){
-            this.message(this.pet.name + " isn't hungry right now");
+        if(true){
+            this.haveBirthday();
         } else {
-            this.ui.$bowl.attr("src","img/bowl_full.png");
-            this.pet.feed();
-            setTimeout(()=>{
-                this.ui.$bowl.attr("src","img/bowl_empty.png");
-            },this.feedDelay*this.pet.traits.hunger)
+            if(this.pet.traits.hunger < 1){
+                this.message(this.pet.name + " isn't hungry right now");
+            } else {
+                this.ui.$bowl.attr("src","img/bowl_full.png");
+                this.pet.feed();
+                setTimeout(()=>{
+                    this.ui.$bowl.attr("src","img/bowl_empty.png");
+                },this.feedDelay*this.pet.traits.hunger)
+            }
         }
+        
     },
     playWithPet(){
         console.log("playing with pet");
@@ -136,12 +155,17 @@ const game = {
             $mouseTail.append($mouse);
             this.ui.$petContainer.append($mouseTail);
             this.pet.play();
+            setTimeout(()=>{
+                $mouseTail.remove();
+            },this.playDelay*this.pet.traits.boredom)
         }
     },
     haveBirthday(){
-        const $hat = $("<img/>").addClass("party-hat");
-              $hat.attr("src","img/party-hat.png");
-        this.ui.$petImage.append($hat);
+        for(let i = 0; i < this.pet.ageYear; i++){
+            const $cake = $("<img/>").addClass("cake");
+                  $cake.attr("src","img/cake_candles.png");
+            this.ui.$bowl.append($cake);
+        }
     },
     letPetSleep(){
         if(this.pet.traits.sleepiness < 1){
@@ -153,7 +177,7 @@ const game = {
             setTimeout(()=>{
                 this.toggleLights();
                 this.pet.neutral();
-            },this.feedDelay*this.pet.traits.hunger)
+            },this.sleepDelay*this.pet.traits.sleepiness)
         }
     },
     toggleLights(){
@@ -177,6 +201,8 @@ const game = {
         this.ui.$popup.append($button);
         $button.on("click",()=> {
             $('.pop-up button').remove();
+            $('.pop-up input').remove();
+            this.togglePop();
             this.start();
         })
     },
