@@ -1,5 +1,10 @@
 console.log("app running");
 
+//bugs
+//+++ can close pop-up on pause
+//+++ can generate multiple events on button click
+//+++ on test mode, ageRange runs past available images
+
 $('#feed-button').on('click', function(){
     game.feedPet();
 })
@@ -26,14 +31,12 @@ $('#close-pop').on('click',function(){
 })
 
 $('#new-button').on('click',function(){
-    game.togglePop();
+    game.newGame();
 })
-
-
 
 const game = {
     paused: false,
-    ageRate: 1000,
+    ageRate: 500,
     timer: null,
     feedDelay: 1000,
     sleepDelay: 1000,
@@ -55,7 +58,7 @@ const game = {
         $message: $('#message'),
     },
     start(){
-        console.log('Starting game!');
+        console.log('Starting new game!');
         this.ui.$bowl.attr("src","img/bowl_empty.png");
         
         if(this.pet === null){
@@ -68,6 +71,12 @@ const game = {
             this.startTimer();
             this.updateUI();
         }
+    },
+    newGame(){
+        this.testMode = false;
+        this.pet = null;
+        $(".pet").remove();
+        this.start();
     },
     requestNamePrompt(){
         $('#close-pop').addClass("hidden");
@@ -102,7 +111,7 @@ const game = {
     createPet(name){
         console.log("creating pet!");
         //const $petShell 
-        const $petShell = $("<div/>").addClass("pet-shell");
+        const $petShell = $("<div/>").addClass("pet-shell ageRange0");
         const $pet = $("<img/>").addClass("pet");
         $petShell.append($pet);
         this.ui.$petContainer.append($petShell);
@@ -133,7 +142,7 @@ const game = {
     },
     feedPet(){
         console.log("feeding pet");
-        if(true){
+        if(this.pet.ageMonth === 0){
             this.haveBirthday();
         } else {
             if(this.pet.traits.hunger < 1){
@@ -165,15 +174,20 @@ const game = {
         }
     },
     haveBirthday(){
+        const $cakeContainer = $("<div/>").addClass("cake-container");
         for(let i = 0; i < this.pet.ageYear; i++){
             const $cake = $("<img/>").addClass("cake");
                   $cake.attr("src","img/cake_candles.png");
-            this.ui.$bowl.append($cake);
+                  $cakeContainer.append($cake);
         }
+        this.ui.$petContainer.append($cakeContainer);
+        setTimeout(()=>{
+            $cakeContainer.remove();
+        },this.feedDelay*3)
     },
     letPetSleep(){
         if(this.pet.traits.sleepiness < 1){
-            this.message(this.pet.name + " isn't sleepy right now");
+            this.message(this.pet.name + " isn't sleepy right now",300);
         } else {
             console.log("time to sleep!");
             this.toggleLights();
@@ -196,9 +210,11 @@ const game = {
         console.log("toggling pause!");
         this.paused = !this.paused;
         if(this.paused){
+            this.message("paused!");
             this.stopTimer();
             this.pet.freeze();
         } else {
+            this.message("unpaused!");
             this.startTimer();
             this.pet.unfreeze();
         }
@@ -240,11 +256,14 @@ const game = {
         this.ui.$ageYear.text(this.pet.ageYear);
         this.ui.$ageMonth.text(this.pet.ageMonth+1);
     },
-    message(text){
+    message(text,timeOut){
         if(!this.isPopUpShowing){
             this.togglePop();
         }
         this.ui.$message.text(text);
+        if(timeOut){
+            setTimeout(()=>{this.togglePop()},timeOut)
+        }
     },
     clearContainer(container){
         while(container.firstChild){

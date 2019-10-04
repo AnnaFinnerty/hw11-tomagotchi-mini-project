@@ -24,19 +24,6 @@ class Pet{
             top: 0,
             bottom: $('.pet-container').height(),
         }
-        this.images = {
-            seated: "img/tiger0_seated.png",
-            playing: "img/tiger0_playing.png",
-            sleeping:"img/tiger_sleeping.png",
-            standing: "img/tiger0_standing.png",
-            dead: "img/tiger0_dead.png",
-            seated1: "img/tiger1_playing.png",
-            playing1: "img/tiger1_seated.png",
-            sleeping1:"img/tiger_sleeping.png",
-            standing1: "img/tiger1_standing.png",
-            dead1: "img/tiger1_dead.png",
-
-        },
         this.state = "standing";
         this.isMoving = true;
         this.isDead = false;
@@ -51,15 +38,8 @@ class Pet{
                     this.neutral();
                 }
             }
-            if(this.ageMonth === 11){
-                this.ageMonth = 0;
-                this.ageYear++;
-                //increase size as tiger ages up to max size
-                if(this.ageYear%5===0){
-                    if(this.ageRange <= 4){
-                        this.ageRange++;
-                    }
-                }
+            if(this.ageMonth === 1){
+                this.birthday();
             } else {
                 this.ageMonth++;
             }
@@ -67,6 +47,18 @@ class Pet{
                 this.gremlin();
             }
         }
+    }
+    birthday(){
+        this.ageMonth = 0;
+        this.ageYear++;
+        //increase size as tiger ages up to max size
+        if(this.ageYear%5===0 || this.testMode){
+            if(this.ageRange <= 3){
+                this.$display.removeClass("ageRange"+this.ageRange-1).addClass("ageRange"+this.ageRange);
+                this.ageRange++;
+                this.setImage();
+                }
+            }
     }
     gremlin(){
         const chanceSomethingHappens = Math.random();
@@ -94,7 +86,7 @@ class Pet{
         }
     }
     setImage(){
-        const image = this.images[this.state];
+        const image = this.state === "sleeping" ? "img/tiger_sleeping.png" : "img/tiger" + this.ageRange + "_" + this.state + ".png";
         this.$display.attr("src",image)
     }
     neutral(){
@@ -132,7 +124,7 @@ class Pet{
     sleep(){
         console.log("I'm sleeping");
         this.state = "sleeping";
-        this.freeze(this.boundaries.right*.5,this.boundaries.bottom*.5);
+        this.freeze(this.boundaries.right*.6,this.boundaries.bottom*.8);
         const interval = setInterval(() => {
             if(this.traits.sleepiness > 0){
                 this.traits.sleepiness--;
