@@ -3,7 +3,7 @@ html {
     background-size: cover;
     height: 100%;
     overflow: hidden;
-  }
+}
 
 body{
     margin: 0;
@@ -19,6 +19,10 @@ input{
     text-align: center;
     font-size: 8vh;
     font-family: 'Luckiest Guy', cursive;
+}
+
+.light{
+    
 }
 
 .dark{
@@ -112,15 +116,37 @@ span{
 }
 
 .mouse-tail{
-    background-image: url(../img/mouse.png) no-repeat center center fixed;
-    width: 10vw;
-    height: 20vh;
+    position: fixed;
+    height: 40vh;
+    width: 1vw;
+    background-color: gray;
+    left: 45vw;
+    top: 0;
+    transform-origin: top center;
+    animation-name: mouse-swing;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 .mouse{
-    position: fixed;
+    position: relative;
     height: 20vh;
-    top: 50vh;
-    left: 50vw;
+    top: 38vh;
+    left: -3vw;
 }
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes mouse-swing {
+    from {background-color: red;}
+    to {background-color: yellow;}
+  }
+  
+  /* Standard syntax */
+  @keyframes mouse-swing {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(15deg);}
+  }
+
+
 
